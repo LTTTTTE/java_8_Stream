@@ -10,7 +10,11 @@ import static java.util.Comparator.*;
 import java.util.Map;
 
 class Student {
-    String name;  boolean isMale;  int hak;  int ban;  int score;
+    private String name;
+    private boolean isMale;
+    private int hak;
+    private int ban;
+    private int score;
 
     Student(String name, boolean isMale, int hak, int ban, int score) { 
         this.name       = name;
@@ -28,7 +32,7 @@ class Student {
 
     public String toString() {
         return String.format("[%s, %s, %d학년 %d반, %3d점]", name,
-                             isMale ? "남":"여", hak, ban, score); 
+                             isMale ? "남":"여", hak, ban, score);
         }
 
     enum Level { HIGH, MID, LOW }
@@ -40,6 +44,7 @@ class StreamEx8 {
         Student[] stuArr = new Student[18];
         String line="";
         int index=0;
+
         BufferedReader br = new BufferedReader(new FileReader("stud.csv"));
         while((line = br.readLine()) != null){
             String[] student=line.split(",");
@@ -52,7 +57,7 @@ class StreamEx8 {
                     ,Integer.parseInt(student[4])
             );
             System.out.println(student[0]+ " " + student[1]+ " " + student[2]+ " " + student[3]+ " " + student[4]);
-
+            //
         }
 
 //        Student[] stuArr = {
@@ -169,3 +174,5 @@ class StreamEx8 {
 		}
 	}  // main의 끝
 }
+
+//RRRR
