@@ -8,7 +8,7 @@ public class CSVReader {
 
     public static void main(String[] args) {
 
-        String csvFile = "C:\\workspace\\java_Test\\src\\CSV\\country.csv";
+        String csvFile = "country.csv";
         String line = "";
         String cvsSplitBy = ",";
 
@@ -29,7 +29,7 @@ public class CSVReader {
             e.printStackTrace();
         }
 
-        String csvFile_2 = "C:\\workspace\\java_Test\\src\\CSV\\stud.csv";
+        String csvFile_2 = "stud.csv";
 
 
         try(BufferedReader br = new BufferedReader(new FileReader(csvFile_2))) {
