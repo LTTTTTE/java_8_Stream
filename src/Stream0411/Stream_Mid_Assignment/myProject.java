@@ -1,14 +1,19 @@
 package Stream0411.Stream_Mid_Assignment;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 //제출기한 4월26일
 //참여 : 정주용
 //출력 줄수가 너무많은 코드는 주석처리
+
+
+//이름,주민번호가 적힌 7만줄의 데이터를 불러와
+//생년월일, 사는도시, 성별 를 추출하여
+//출생년도별, 사는도시별, 성별로 그룹핑하고 정렬하여
+//출력도하고, CSV(엑셀) 파일로도 만들어 출력.
+
 class Person{
 
     private String name;
@@ -68,6 +73,10 @@ class Person{
     public String toString(){
         return this.getName() + " 19" + this.getYear() + "년생 " +this.getCity() + " 에서 태어났으며 " + this.getGender() + " 이다";
     }
+    public String getSocialNumberBoxed(){
+        return getFirstSocialNumber()+"-"+getSocialNumber().substring(6);
+    }
+
 }
 
 enum Gender {
@@ -99,6 +108,36 @@ public class myProject {
         return personList;
     }
 
+    public static boolean createCSVFile(Map<String, Map<String, Map<Gender, List<Person>>>> map) throws IOException{
+
+        try{
+            BufferedWriter writer = new BufferedWriter(new FileWriter("newFile.csv",false));
+
+            for(Map<String,Map<Gender,List<Person>>>stringMapMap : map.values()){
+                for(Map<Gender,List<Person>>genderListMap : stringMapMap.values()){
+                    for(List<Person>list : genderListMap.values()){
+                        for(Person person: list){
+                            writer.write(person.getName()+",19"+person.getYear()+","+person.getCity()+","+person.getGender()+","+person.getSocialNumberBoxed());
+                            writer.newLine();
+                        }
+                    }
+                    writer.write("###################");
+                    writer.newLine();
+                }
+                writer.write("###################");
+                writer.newLine();
+            }
+
+            writer.flush();
+            writer.close();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     public static String codeToCity(int code){
 
         if(code<=8)return "서울";
@@ -128,7 +167,7 @@ public class myProject {
 
 //        personList.stream().forEach(x->
 //            System.out.println(x.getName()+ " : "+x.getSocialNumber())
-//        );  //전체 데이터 출력
+//        );  //전체 데이터 출력 7만줄
 
 
         // 단순 중복제거 , 불확실한정보 제거하기.
@@ -138,16 +177,16 @@ public class myProject {
 //                .filter(x->!x.getSocialNumber().equals("unidentified")) // 주민번호에 불확실한 정보는 filtering 후 반대로 제거
 //                .forEach(x->
 //                        System.out.println(x.getName()+ " : "+x.getSocialNumber())
-//                ); //출력
+//                ); //출력 약7만줄
 
         String collect = personList.stream()    //주민번호 통째 string
                 .filter(x -> !x.getName().equals("unidentified")) // 이름에 불확실한 정보는 filtering 후 반대로 제거
                 .filter(x -> !x.getSocialNumber().equals("unidentified")) // 주민번호에 불확실한 정보는 filtering 후 반대로 제거
                 .flatMap(x -> Arrays.stream(x.splitSocialNumber())) //주민번호 스플릿
                 .collect(Collectors.joining("-"));//주민번호 사이에 '-' 넣음.
-        //System.out.println(collect);
+        //System.out.println(collect); String 의 크기가 7만*13
 
-        //주민번호 앞자리가 같은 사람들
+        //주민번호 앞자리가 같은 사람들(생년월일이 같은사람 수)
         Map<String, Long> socialNumberCountMap = personList.stream() //생년월일별 사람수 확인.
                 .filter(x -> !x.getName().equals("unidentified")) // 이름에 불확실한 정보는 filtering 후 반대로 제거
                 .filter(x -> !x.getSocialNumber().equals("unidentified")) // 주민번호에 불확실한 정보는 filtering 후 반대로 제거
@@ -158,6 +197,8 @@ public class myProject {
  //       for (String socialNumber: tss) {
  //           System.out.println(socialNumber + " : " + socialNumberCountMap.get(socialNumber) + " 명");
  //       }
+        System.out.println(socialNumberCountMap.values().stream().mapToInt(value -> value.intValue()).max().orElse(0));
+ // 가장 많이 태어난 생년월일 의 태어난 사람수
 
         System.out.println("\n");
 
@@ -204,7 +245,7 @@ public class myProject {
                 .filter(x -> !x.getName().equals("unidentified"))
                 .filter(x -> !x.getSocialNumber().equals("unidentified"))
                 .filter(x -> (x.getSocialNumber().length() == 13))  //이상한정보 걸러냄
-                .collect(Collectors.groupingBy(x -> {
+                .collect(Collectors.groupingBy(x -> {//도시코드뽑아냄
                             return codeToCity(Integer.parseInt(x.getSocialNumber().substring(7, 9)));
                         }, Collectors.counting())
                 )
@@ -239,12 +280,13 @@ public class myProject {
             for(Map<Gender,List<Person>>genderListMap : stringMapMap.values()){ //도시 오름차순
                 for(List<Person>list : genderListMap.values()){ //남성먼저 다음 여성 출력
                     for(Person person: list){
-                        System.out.println(person);
+                        System.out.println(person); //Override 된 메소드로 출력
                     }
                 }
             }
 
         }
+        System.out.println(createCSVFile(PersonMap));
 
     }
 }
