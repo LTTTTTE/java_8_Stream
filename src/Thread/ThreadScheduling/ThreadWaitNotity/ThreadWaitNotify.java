@@ -64,5 +64,16 @@ public class ThreadWaitNotify {
                 account01.subBalance(ThreadLocalRandom.current().nextLong(71));
             });
         }).start();
+
+        new Thread(()->{
+            IntStream.rangeClosed(1,30).forEach(x->{
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                account01.addBalance(ThreadLocalRandom.current().nextLong(71));
+            });
+        }).start();
     }
 }
